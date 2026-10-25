@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الدخول وإنشاء حساب - WASLA | وصلة</title>
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Permanent session check: If already logged in, redirect directly to dashboard or shop!
+    try {
+      const rawUser = localStorage.getItem('souq_current_user');
+      if (rawUser) {
+        const u = JSON.parse(rawUser);
+        if (u && u.id) {
+          window.location.replace(u.role === 'merchant' ? 'merchant.html' : 'shop.html');
+        }
+      }
+    } catch (e) {}
+  </script>
+  <style>
+    body { min-height: 100vh; background: var(--bg-main); }
+    .auth-page {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .auth-left {
+      background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 40%, #16213e 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      top: -100px; right: -100px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(245,166,35,0.08) 0%, transparent 70%);
+    }
+    .auth-left-content { position: relative; z-index: 2; text-align: center; width: 100%; }
+    .auth-logo { font-size: 48px; font-weight: 900; color: var(--primary); margin-bottom: 8px; text-shadow: 0 0 40px rgba(245,166,35,0.4); }
+    .auth-logo span { color: white; }
+    .auth-tagline { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 40px; }
+    .auth-features { display: flex; flex-direction: column; gap: 16px; text-align: right; }
+    .auth-feature {
+      display: flex; align-items: center; gap: 16px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+    }
+    .auth-feature-icon {
+      font-size: 26px; flex-shrink: 0;
+      width: 48px; height: 48px;
+      background: rgba(245,166,35,0.12);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .auth-feature h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .auth-feature p { font-size: 12px; color: rgba(255,255,255,0.6); }
+    .auth-illustration { margin: 30px 0; font-size: 100px; animation: heroFloat 4s ease-in-out infinite; display: block; }
+    @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-15px)} }
+
+    .auth-right {
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      padding: 40px 32px;
+      background: var(--bg-main);
+      overflow-y: auto;
+    }
+    .auth-box { width: 100%; max-width: 460px; }
+    .auth-header { text-align: center; margin-bottom: 28px; }
+    .auth-header h2 { font-size: 26px; font-weight: 800; margin-bottom: 6px; }
+    .auth-header p { color: var(--text-secondary); font-size: 14px; }
+
+    .auth-tabs {
+      display: grid; grid-template-columns: 1fr 1fr;
+      background: var(--bg-input);
+      border-radius: var(--radius-md);
+      padding: 4px; margin-bottom: 28px; gap: 4px;
+    }
+    .auth-tab {
+      padding: 11px; border-radius: var(--radius-sm);
+      text-align: center; font-size: 14px; font-weight: 600;
+      cursor: pointer; transition: var(--transition);
+      color: var(--text-secondary); font-family: var(--font-ar);
+      border: none; background: transparent;
+    }
+    .auth-tab.active { background: var(--primary); color: white; box-shadow: var(--shadow-primary); }
+
+    .role-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+    .role-card {
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 12px; text-align: center;
+      cursor: pointer; transition: var(--transition);
+      background: var(--bg-card); position: relative;
+    }
+    .role-card:hover { border-color: var(--primary); background: rgba(245,166,35,0.05); }
+    .role-card.selected {
+      border-color: var(--primary);
+      background: rgba(245,166,35,0.08);
+      box-shadow: 0 0 0 3px rgba(245,166,35,0.12);
+    }
+    .role-card-check {
+      position: absolute; top: 8px; left: 8px;
+      width: 20px; height: 20px; border-radius: 50%;
+      background: var(--primary); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700;
+      opacity: 0; transition: var(--transition);
+    }
+    .role-card.selected .role-card-check { opacity: 1; }
+    .role-icon { font-size: 36px; margin-bottom: 8px; display: block; }
+    .role-title { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+    .role-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+
+    .auth-form { display: flex; flex-direction: column; gap: 16px; }
+    .input-group { position: relative; }
+    .input-icon {
+      position: absolute; right: 14px; top: 50%;
+      transform: translateY(-50%); color: var(--text-muted);
+      font-size: 16px; pointer-events: none;
+    }
+    .input-with-icon { padding-right: 44px !important; }
+    .password-toggle {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%); background: none;
+      border: none; color: var(--text-muted); cursor: pointer;
+      font-size: 16px; padding: 0; transition: var(--transition);
+    }
+    .password-toggle:hover { color: var(--primary); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .auth-divider {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--text-muted); font-size: 13px;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    .error-msg {
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; color: var(--danger);
+      font-size: 13px; display: none;
+    }
+    .error-msg.show { display: block; }
+    .success-msg {
+      background: rgba(34,197,94,0.1);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; color: var(--success);
+      font-size: 13px; display: none;
+    }
+    .success-msg.show { display: block; }
+
+    .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-secondary); }
+    .auth-footer a { color: var(--primary); font-weight: 600; cursor: pointer; }
+    .terms-text { font-size: 12px; color: var(--text-muted); text-align: center; line-height: 1.6; }
+    .terms-text a { color: var(--primary); }
+
+    .auth-mobile-logo { display: none; }
+    @media (max-width: 900px) {
+      .auth-page { grid-template-columns: 1fr; }
+      .auth-left { display: none; }
+      .auth-mobile-logo { display: flex; }
+      .auth-right { padding: 24px 16px; }
+      .auth-box { max-width: 440px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-page">
+    <!-- Left Branding -->
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <div class="auth-logo" style="display:flex;align-items:center;gap:16px;justify-content:center">
+          <img src="assets/logo.png" alt="WASLA Logo" style="width:68px;height:68px;border-radius:50%;box-shadow:0 0 24px rgba(0,229,255,0.7);border:2px solid rgba(0,229,255,0.8)">
+          <div style="text-align:right">
+            <span style="font-family:var(--font-en);font-size:32px;font-weight:900;letter-spacing:2px;color:white;display:block">WASLA</span>
+            <span style="font-size:14px;color:var(--brand-cyan);font-weight:800;letter-spacing:1px">وصلة للتسوق الذكي</span>
+          </div>
+        </div>
+        <p class="auth-tagline" style="margin-top:14px">منصة التجارة الإلكترونية الأولى والذكية في مصر</p>
+        <span class="auth-illustration">🛍️</span>
+        <div class="auth-features">
+          <div class="auth-feature">
+            <div class="auth-feature-icon">🚀</div>
+            <div><h4>ابدأ تجارتك فوراً</h4><p>سجل كتاجر وابدأ في بيع منتجاتك خلال دقائق</p></div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon">🛡️</div>
+            <div><h4>تسوق بأمان</h4><p>جميع معاملاتك محمية بتشفير عالي المستوى</p></div>
+          </div>
+          <div class="auth-feature">
+            <div class="auth-feature-icon">💎</div>
+            <div><h4>أفضل الأسعار</h4><p>آلاف المنتجات بأسعار تنافسية لا تقاوم</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Form -->
+    <div class="auth-right">
+      <div class="auth-box">
+        <!-- Mobile Logo (< 900px) -->
+        <div class="auth-mobile-logo" style="align-items:center;gap:12px;justify-content:center;margin-bottom:20px">
+          <img src="assets/logo.png" alt="WASLA Logo" style="width:46px;height:46px;border-radius:50%;box-shadow:0 0 16px rgba(0,229,255,0.6)">
+          <div style="text-align:right">
+            <span style="font-family:var(--font-en);font-size:22px;font-weight:900;color:white;letter-spacing:1px">WASLA</span>
+            <span style="font-size:11px;color:var(--brand-cyan);font-weight:800;display:block">وصلة للتسوق الذكي</span>
+          </div>
+        </div>
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="login-tab" onclick="switchTab('login')">🔑 تسجيل الدخول</button>
+          <button class="auth-tab" id="register-tab" onclick="switchTab('register')">✨ إنشاء حساب</button>
+        </div>
+
+        <!-- LOGIN -->
+        <div id="login-section">
+          <div class="auth-header">
+            <h2>مرحباً بعودتك! 👋</h2>
+            <p>سجل دخولك للوصول لحسابك</p>
+          </div>
+          <form class="auth-form" onsubmit="handleLogin(event)">
+            <div id="login-error" class="error-msg"></div>
+            <div class="form-group">
+              <label>البريد الإلكتروني</label>
+              <div class="input-group">
+                <span class="input-icon">📧</span>
+                <input type="email" id="login-email" class="form-input input-with-icon" placeholder="example@email.com" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>كلمة المرور</label>
+              <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="login-password" class="form-input input-with-icon" placeholder="أدخل كلمة المرور" required style="padding-left:44px">
+                <button type="button" class="password-toggle" onclick="togglePassword('login-password',this)">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full btn-lg" id="login-btn">🔑 تسجيل الدخول</button>
+            <div class="auth-divider">أو جرب الحسابات التجريبية</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <button type="button" class="btn btn-ghost" onclick="demoLogin('merchant')">🏪 دخول كتاجر</button>
+              <button type="button" class="btn btn-ghost" onclick="demoLogin('buyer')">🛒 دخول كمشتري</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- REGISTER -->
+        <div id="register-section" style="display:none">
+          <div class="auth-header">
+            <h2>إنشاء حساب جديد ✨</h2>
+            <p>اختر نوع حسابك وابدأ الآن</p>
+          </div>
+          <div class="role-selector">
+            <div class="role-card selected" id="role-buyer" onclick="selectRole('buyer')">
+              <div class="role-card-check">✓</div>
+              <span class="role-icon">🛒</span>
+              <div class="role-title">مشتري</div>
+              <div class="role-desc">تصفح وشترِ من آلاف المنتجات</div>
+            </div>
+            <div class="role-card" id="role-merchant" onclick="selectRole('merchant')">
+              <div class="role-card-check">✓</div>
+              <span class="role-icon">🏪</span>
+              <div class="role-title">تاجر</div>
+              <div class="role-desc">بيع منتجاتك لملايين العملاء</div>
+            </div>
+          </div>
+          <form class="auth-form" onsubmit="handleRegister(event)">
+            <div id="register-error" class="error-msg"></div>
+            <div id="register-success" class="success-msg"></div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>الاسم الأول</label>
+                <div class="input-group">
+                  <span class="input-icon">👤</span>
+                  <input type="text" id="reg-fname" class="form-input input-with-icon" placeholder="الاسم الأول" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>الاسم الأخير</label>
+                <div class="input-group">
+                  <span class="input-icon">👤</span>
+                  <input type="text" id="reg-lname" class="form-input input-with-icon" placeholder="الاسم الأخير" required>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>البريد الإلكتروني</label>
+              <div class="input-group">
+                <span class="input-icon">📧</span>
+                <input type="email" id="reg-email" class="form-input input-with-icon" placeholder="example@email.com" required>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>رقم الهاتف</label>
+              <div class="input-group">
+                <span class="input-icon">📱</span>
+                <input type="tel" id="reg-phone" class="form-input input-with-icon" placeholder="01XXXXXXXXX">
+              </div>
+            </div>
+            <div class="form-group" id="store-name-group" style="display:none">
+              <label>اسم المتجر</label>
+              <div class="input-group">
+                <span class="input-icon">🏪</span>
+                <input type="text" id="reg-store" class="form-input input-with-icon" placeholder="اسم متجرك">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>كلمة المرور</label>
+              <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="reg-password" class="form-input input-with-icon" placeholder="6 أحرف على الأقل" required style="padding-left:44px">
+                <button type="button" class="password-toggle" onclick="togglePassword('reg-password',this)">👁️</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>تأكيد كلمة المرور</label>
+              <div class="input-group">
+                <span class="input-icon">🔒</span>
+                <input type="password" id="reg-password2" class="form-input input-with-icon" placeholder="أعد إدخال كلمة المرور" required style="padding-left:44px">
+                <button type="button" class="password-toggle" onclick="togglePassword('reg-password2',this)">👁️</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full btn-lg" id="register-btn">✨ إنشاء الحساب</button>
+            <p class="terms-text">بالتسجيل، أنت توافق على <a href="#">شروط الخدمة</a> و<a href="#">سياسة الخصوصية</a></p>
+          </form>
+        </div>
+
+        <div class="auth-footer">
+          <span id="auth-switch-text">ليس لديك حساب؟</span>
+          <a id="auth-switch-link" onclick="switchTab('register')"> إنشاء حساب جديد</a>
+        </div>
+        <div style="margin-top:16px;text-align:center">
+          <a href="index.html" class="btn btn-ghost btn-sm">← العودة للرئيسية</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container" class="toast-container"></div>
+  <script src="js/app.js"></script>
+  <script>
+    let selectedRole = 'buyer';
+
+    function switchTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('login-section').style.display = isLogin ? 'block' : 'none';
+      document.getElementById('register-section').style.display = isLogin ? 'none' : 'block';
+      document.getElementById('login-tab').classList.toggle('active', isLogin);
+      document.getElementById('register-tab').classList.toggle('active', !isLogin);
+      document.getElementById('auth-switch-text').textContent = isLogin ? 'ليس لديك حساب؟' : 'لديك حساب بالفعل؟';
+      const link = document.getElementById('auth-switch-link');
+      link.textContent = isLogin ? ' إنشاء حساب جديد' : ' تسجيل الدخول';
+      link.onclick = () => switchTab(isLogin ? 'register' : 'login');
+    }
+
+    function selectRole(role) {
+      selectedRole = role;
+      document.getElementById('role-buyer').classList.toggle('selected', role === 'buyer');
+      document.getElementById('role-merchant').classList.toggle('selected', role === 'merchant');
+      document.getElementById('store-name-group').style.display = role === 'merchant' ? 'block' : 'none';
+    }
+
+    function togglePassword(id, btn) {
+      const inp = document.getElementById(id);
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+      const btn = document.getElementById('login-btn');
+      btn.textContent = '⏳ جاري التحقق...'; btn.disabled = true;
+      setTimeout(() => {
+        const user = UsersDB.findByEmail(email);
+        if (!user || user.password !== password) {
+          errorEl.textContent = '❌ البريد الإلكتروني أو كلمة المرور غير صحيحة';
+          errorEl.classList.add('show');
+          btn.textContent = '🔑 تسجيل الدخول'; btn.disabled = false;
+          return;
+        }
+        errorEl.classList.remove('show');
+        Auth.login(user);
+        showToast('مرحباً ' + user.name + '! 👋', 'success');
+        setTimeout(() => { window.location.href = user.role === 'merchant' ? 'merchant.html' : 'shop.html'; }, 800);
+      }, 700);
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const fname = document.getElementById('reg-fname').value.trim();
+      const lname = document.getElementById('reg-lname').value.trim();
+      const email = document.getElementById('reg-email').value.trim();
+      const phone = document.getElementById('reg-phone').value.trim();
+      const store = document.getElementById('reg-store').value.trim();
+      const pass = document.getElementById('reg-password').value;
+      const pass2 = document.getElementById('reg-password2').value;
+      const errEl = document.getElementById('register-error');
+      const sucEl = document.getElementById('register-success');
+      const btn = document.getElementById('register-btn');
+      errEl.classList.remove('show'); sucEl.classList.remove('show');
+      if (pass.length < 6) { errEl.textContent = '⚠️ كلمة المرور 6 أحرف على الأقل'; errEl.classList.add('show'); return; }
+      if (pass !== pass2) { errEl.textContent = '⚠️ كلمتا المرور غير متطابقتان'; errEl.classList.add('show'); return; }
+      if (UsersDB.findByEmail(email)) { errEl.textContent = '⚠️ البريد الإلكتروني مستخدم بالفعل'; errEl.classList.add('show'); return; }
+      btn.textContent = '⏳ جاري الإنشاء...'; btn.disabled = true;
+      setTimeout(() => {
+        const user = UsersDB.add({ name: fname + ' ' + lname, email, phone, password: pass, role: selectedRole, storeName: selectedRole === 'merchant' ? store : null });
+        Auth.login(user);
+        sucEl.textContent = '🎉 تم إنشاء حسابك بنجاح! جاري التحويل...';
+        sucEl.classList.add('show');
+        setTimeout(() => { window.location.href = selectedRole === 'merchant' ? 'merchant.html' : 'shop.html'; }, 1000);
+      }, 800);
+    }
+
+    function demoLogin(role) {
+      const email = role === 'merchant'
+        ? (UsersDB.findByEmail('merchant@wasla.com') ? 'merchant@wasla.com' : 'merchant@souqplus.com')
+        : (UsersDB.findByEmail('buyer@wasla.com') ? 'buyer@wasla.com' : 'buyer@souqplus.com');
+      let user = UsersDB.findByEmail(email);
+      if (!user) user = UsersDB.add({ name: role === 'merchant' ? 'متجر وصلة التجريبي' : 'مشتري تجريبي', email, password: '123456', role, storeName: role === 'merchant' ? 'متجر وصلة إكسبريس' : null });
+      Auth.login(user);
+      showToast('دخلت كـ ' + (role === 'merchant' ? 'تاجر' : 'مشتري') + ' تجريبي 👋', 'success');
+      setTimeout(() => { window.location.href = role === 'merchant' ? 'merchant.html' : 'shop.html'; }, 700);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      Auth.init();
+      seedData();
+      if (Auth.isLoggedIn()) {
+        window.location.replace(Auth.isMerchant() ? 'merchant.html' : 'shop.html');
+        return;
+      }
+      if (window.location.hash === '#register') switchTab('register');
+    });
+  </script>
+</body>
+</html>

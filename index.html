@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WASLA | وصلة - منصة التجارة الإلكترونية الذكية</title>
+  <meta name="description" content="منصة WASLA (وصلة) - تسوق من آلاف المنتجات بأفضل الأسعار وبحث ذكي بالعامية والفصحى">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* =========================================================
+       EPIC AAA SCI-FI INTRO ENGINE (WASLA HYPERDRIVE)
+       ========================================================= */
+    .wasla-intro {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #03040b;
+      z-index: 9999999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow: hidden;
+      direction: rtl;
+      user-select: none;
+      perspective: 1000px;
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                  filter 0.8s ease;
+    }
+
+    .wasla-intro.intro-warp-active {
+      animation: warpExit 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes warpExit {
+      0% { opacity: 1; transform: scale(1); filter: blur(0px) brightness(1); }
+      50% { opacity: 1; transform: scale(1.12); filter: blur(4px) brightness(1.8); }
+      100% { opacity: 0; transform: scale(1.4); filter: blur(15px) brightness(2.5); pointer-events: none; }
+    }
+
+    /* Interactive Background Canvas */
+    #intro-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: auto;
+    }
+
+    /* Cyber Scanline (Single Fast & Crisp Sweep) */
+    .intro-scanline {
+      position: absolute;
+      top: -5%;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00e5ff 25%, #ffffff 50%, #00e5ff 75%, transparent);
+      box-shadow: 0 0 20px #00e5ff, 0 0 45px #00e5ff;
+      opacity: 0;
+      z-index: 2;
+      pointer-events: none;
+      animation: scanlineSingleSweep 1.0s cubic-bezier(0.2, 0.8, 0.2, 1) 0.08s 1 forwards;
+    }
+
+    @keyframes scanlineSingleSweep {
+      0% { top: -5%; opacity: 0; }
+      15% { opacity: 0.95; }
+      85% { opacity: 0.95; }
+      100% { top: 105%; opacity: 0; }
+    }
+
+    /* Ambient Nebulae */
+    .intro-nebula {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(100px);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0.5;
+    }
+    .nebula-cyan {
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.35) 0%, transparent 70%);
+      top: -10%;
+      right: -10%;
+      animation: floatNebula 6s ease-in-out infinite alternate;
+    }
+    .nebula-purple {
+      width: 550px;
+      height: 550px;
+      background: radial-gradient(circle, rgba(121, 40, 202, 0.35) 0%, transparent 70%);
+      bottom: -15%;
+      left: -10%;
+      animation: floatNebula 8s ease-in-out infinite alternate-reverse;
+    }
+
+    @keyframes floatNebula {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(40px, -40px) scale(1.15); }
+    }
+
+    /* Top Action Bar: Sound + Skip */
+    .intro-top-bar {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
+      pointer-events: auto;
+    }
+
+    .intro-hud-tag {
+      font-family: var(--font-en);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: rgba(0, 229, 255, 0.8);
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      padding: 6px 14px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      backdrop-filter: blur(10px);
+    }
+    .hud-pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #00e5ff;
+      box-shadow: 0 0 10px #00e5ff;
+      animation: pulseDot 1s infinite alternate;
+    }
+    @keyframes pulseDot {
+      from { opacity: 0.3; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1.3); }
+    }
+
+    .intro-top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .intro-sound-btn, .intro-skip-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #00e5ff;
+      padding: 8px 18px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: var(--font-ar);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .intro-sound-btn:hover, .intro-skip-btn:hover {
+      background: rgba(0, 229, 255, 0.2);
+      border-color: #00e5ff;
+      color: #ffffff;
+      box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* 3D Hologram Center Stage */
+    .intro-center-stage {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transform-style: preserve-3d;
+      transition: transform 0.15s ease-out;
+      pointer-events: none;
+      max-width: 600px;
+      padding: 0 20px;
+    }
+
+    /* Hologram Core Portal */
+    .intro-hologram-wrap {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      perspective: 800px;
+    }
+
+    .holo-shockwave {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 229, 255, 0.8);
+      box-shadow: 0 0 40px rgba(0, 229, 255, 0.6);
+      opacity: 0;
+      transform: scale(0.3);
+      pointer-events: none;
+    }
+    .holo-shockwave.active {
+      animation: shockwaveExplode 1.6s cubic-bezier(0.1, 0.8, 0.2, 1) infinite;
+    }
+    @keyframes shockwaveExplode {
+      0% { transform: scale(0.4); opacity: 1; border-width: 4px; }
+      100% { transform: scale(2.4); opacity: 0; border-width: 1px; }
+    }
+
+    /* Concentric Cyber Rings */
+    .holo-ring {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .holo-ring-outer {
+      width: 210px;
+      height: 210px;
+      border: 2px dashed rgba(0, 229, 255, 0.7);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
+      animation: spinClockwise 14s linear infinite;
+    }
+    .holo-ring-middle {
+      width: 170px;
+      height: 170px;
+      border: 2px solid transparent;
+      border-top-color: #00e5ff;
+      border-right-color: #0084ff;
+      animation: spinCounter 6s linear infinite;
+    }
+    .holo-ring-inner {
+      width: 138px;
+      height: 138px;
+      border: 1.5px solid rgba(0, 229, 255, 0.5);
+      border-left: 2px solid #ffffff;
+      animation: spinClockwise 9s linear infinite;
+    }
+
+    .holo-core-light {
+      position: absolute;
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0, 229, 255, 0.85) 0%, rgba(0, 132, 255, 0.4) 60%, transparent 100%);
+      filter: blur(20px);
+      animation: coreBreathe 2s ease-in-out infinite alternate;
+    }
+    @keyframes coreBreathe {
+      from { transform: scale(0.85); opacity: 0.6; }
+      to { transform: scale(1.3); opacity: 1; }
+    }
+
+    /* The WASLA Logo */
+    .holo-logo-box {
+      position: relative;
+      z-index: 5;
+      width: 106px;
+      height: 106px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 50px rgba(0, 229, 255, 0.9), 0 0 100px rgba(0, 132, 255, 0.5);
+      border: 3px solid #00e5ff;
+      animation: logo3dFloat 3.5s ease-in-out infinite alternate;
+    }
+    .holo-logo-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    @keyframes logo3dFloat {
+      0% { transform: translateY(0) rotate(-2deg) scale(1); }
+      100% { transform: translateY(-8px) rotate(3deg) scale(1.05); }
+    }
+
+    @keyframes spinClockwise {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    @keyframes spinCounter {
+      from { transform: rotate(360deg); }
+      to { transform: rotate(0deg); }
+    }
+
+    /* Typography */
+    .intro-title-box {
+      margin-bottom: 12px;
+    }
+    .intro-glitch-title {
+      font-family: var(--font-en);
+      font-size: 58px;
+      font-weight: 900;
+      letter-spacing: 12px;
+      margin-right: -12px;
+      color: #ffffff;
+      text-transform: uppercase;
+      text-shadow: 
+        0 0 15px rgba(0, 229, 255, 0.9),
+        0 0 30px rgba(0, 229, 255, 0.7),
+        0 0 60px rgba(0, 132, 255, 0.5);
+      position: relative;
+      display: inline-block;
+      animation: titleGlitch 4s infinite;
+    }
+
+    @keyframes titleGlitch {
+      0%, 94%, 100% { transform: translate(0, 0); text-shadow: 0 0 20px rgba(0,229,255,0.9); }
+      95% { transform: translate(-2px, 1px); text-shadow: -3px 0 #ff0055, 3px 0 #00e5ff; }
+      97% { transform: translate(2px, -1px); text-shadow: 3px 0 #ff0055, -3px 0 #00e5ff; }
+      99% { transform: translate(0, 0); }
+    }
+
+    .intro-arabic-slogan {
+      font-family: var(--font-ar);
+      font-size: 18px;
+      font-weight: 800;
+      color: #00e5ff;
+      letter-spacing: 1px;
+      text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+      margin-bottom: 18px;
+    }
+
+    /* Futuristic Cyber Chips */
+    .intro-chips-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 26px;
+    }
+    .intro-chip {
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 50px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #ffffff;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+    }
+    .intro-chip span { color: #00e5ff; }
+
+    /* Epic Enter CTA Button */
+    .intro-btn-wrap {
+      pointer-events: auto;
+      margin-bottom: 14px;
+    }
+
+    .epic-enter-btn {
+      position: relative;
+      background: linear-gradient(135deg, #00e5ff 0%, #0084ff 50%, #7928ca 100%);
+      border: none;
+      border-radius: 50px;
+      padding: 16px 42px;
+      color: #ffffff;
+      font-size: 16px;
+      font-weight: 900;
+      font-family: var(--font-ar);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 0 35px rgba(0, 229, 255, 0.65), 0 10px 40px rgba(0, 132, 255, 0.4);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .epic-enter-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, 0.6) 50%, transparent 60%);
+      transform: rotate(25deg) translateY(-100%);
+      animation: lightStreak 3s infinite;
+    }
+    @keyframes lightStreak {
+      0% { transform: rotate(25deg) translateY(-120%); }
+      30%, 100% { transform: rotate(25deg) translateY(120%); }
+    }
+
+    .epic-enter-btn:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 0 50px rgba(0, 229, 255, 0.9), 0 15px 50px rgba(0, 132, 255, 0.6);
+    }
+    .epic-enter-btn:active {
+      transform: translateY(1px) scale(0.98);
+    }
+
+    .btn-warp-arrow {
+      font-size: 18px;
+      transition: transform 0.3s ease;
+    }
+    .epic-enter-btn:hover .btn-warp-arrow {
+      transform: translateX(-6px);
+    }
+
+    /* Auto Countdown status */
+    .intro-countdown-text {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.65);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .countdown-seconds {
+      color: #00e5ff;
+      font-weight: 800;
+    }
+
+    /* Mobile Responsive Adjustments */
+    @media (max-width: 600px) {
+      .intro-glitch-title {
+        font-size: 38px;
+        letter-spacing: 7px;
+        margin-right: -7px;
+      }
+      .intro-arabic-slogan {
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+      .intro-hologram-wrap {
+        width: 170px;
+        height: 170px;
+        margin-bottom: 16px;
+      }
+      .holo-ring-outer { width: 166px; height: 166px; }
+      .holo-ring-middle { width: 136px; height: 136px; }
+      .holo-ring-inner { width: 110px; height: 110px; }
+      .holo-logo-box { width: 84px; height: 84px; }
+      .intro-chips-row { gap: 6px; margin-bottom: 20px; }
+      .intro-chip { font-size: 11px; padding: 5px 10px; }
+      .epic-enter-btn { padding: 13px 30px; font-size: 14px; }
+      .intro-top-bar { top: 16px; left: 16px; right: 16px; }
+      .intro-sound-btn, .intro-skip-btn { padding: 6px 12px; font-size: 11px; }
+      .intro-hud-tag { display: none; }
+    }
+
+    /* ===== MARQUEE ===== */
+    .top-bar {
+      background: var(--gradient-primary);
+      padding: 8px 0;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .top-bar-inner {
+      display: flex;
+      gap: 60px;
+      animation: marquee 20s linear infinite;
+      width: max-content;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    /* ===== HERO CAROUSEL ===== */
+    .hero-carousel {
+      position: relative;
+      overflow: hidden;
+      background: var(--secondary);
+    }
+
+    .hero-slide {
+      display: none;
+      min-height: 520px;
+      align-items: center;
+    }
+    .hero-slide.active { display: flex; }
+
+    .hero-slide-1 { background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 50%, #16213e 100%); }
+    .hero-slide-2 { background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 50%, #1a1a2e 100%); }
+    .hero-slide-3 { background: linear-gradient(135deg, #0a1f0a 0%, #1a2e1a 50%, #0d1a0d 100%); }
+
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 60% 50%, rgba(245,166,35,0.07) 0%, transparent 60%);
+    }
+
+    .hero-content-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      padding: 80px 24px;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 2;
+      width: 100%;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245,166,35,0.15);
+      border: 1px solid rgba(245,166,35,0.3);
+      color: var(--primary);
+      padding: 6px 16px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: clamp(32px, 4vw, 54px);
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 18px;
+    }
+
+    .hero-title .gold { color: var(--primary); }
+    .hero-title .white { color: white; }
+
+    .hero-desc {
+      font-size: 17px;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+
+    .hero-btns { display: flex; gap: 14px; }
+
+    .hero-img-wrap {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hero-img-wrap img {
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 480px;
+      height: 380px;
+      object-fit: cover;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(245,166,35,0.2);
+      animation: heroFloat 4s ease-in-out infinite;
+    }
+
+    .hero-img-badge {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: var(--gradient-primary);
+      color: white;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: var(--shadow-primary);
+    }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+
+    .carousel-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.3);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .carousel-dot.active {
+      background: var(--primary);
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+    .carousel-nav:hover { background: var(--primary); border-color: var(--primary); }
+    .carousel-nav.prev { right: 20px; }
+    .carousel-nav.next { left: 20px; }
+
+    /* ===== FEATURES BAR ===== */
+    .features-bar {
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 24px 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 24px;
+      border-left: 1px solid var(--border);
+    }
+    .feature-item:first-child { border-left: none; }
+
+    .feature-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    .feature-text h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .feature-text p { font-size: 12px; color: var(--text-muted); }
+
+    /* ===== DEAL TIMER ===== */
+    .deal-section {
+      background: linear-gradient(135deg, #1a0a2e, #2d1b69);
+      border-radius: var(--radius-lg);
+      padding: 30px;
+      margin-bottom: 24px;
+    }
+
+    .deal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .deal-title {
+      font-size: 22px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timer {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .timer-unit {
+      background: rgba(0,0,0,0.3);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      text-align: center;
+      min-width: 52px;
+    }
+
+    .timer-num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .timer-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .timer-sep { font-size: 20px; font-weight: 800; color: var(--primary); }
+
+
+
+
+
+    @media (max-width: 768px) {
+      .top-bar {
+        font-size: 11px;
+        padding: 6px 0;
+      }
+      .top-bar-inner {
+        gap: 30px;
+      }
+      .hero-slide {
+        min-height: auto !important;
+        padding: 10px 0 20px !important;
+      }
+      .hero-content-inner {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 12px !important;
+        padding: 12px 14px 20px !important;
+        text-align: center !important;
+      }
+      .hero-tag {
+        margin-bottom: 8px !important;
+        padding: 4px 12px !important;
+        font-size: 11px !important;
+      }
+      .hero-title {
+        font-size: 22px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 8px !important;
+      }
+      .hero-desc {
+        font-size: 12px !important;
+        line-height: 1.5 !important;
+        margin-bottom: 14px !important;
+        max-width: 320px !important;
+      }
+      .hero-btns {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        margin: 0 auto !important;
+      }
+      .hero-btns .btn {
+        flex: 1 !important;
+        padding: 10px 8px !important;
+        font-size: 13px !important;
+        white-space: nowrap !important;
+      }
+      .hero-img-wrap {
+        order: -1 !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        margin-bottom: 6px !important;
+      }
+      .hero-img-wrap img {
+        width: 100% !important;
+        max-width: 260px !important;
+        height: 145px !important;
+        object-fit: cover !important;
+        border-radius: var(--radius-md) !important;
+        animation: none !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.4) !important;
+      }
+      .hero-img-badge {
+        bottom: 8px !important;
+        right: 8px !important;
+        padding: 4px 10px !important;
+        font-size: 11px !important;
+        border-radius: 8px !important;
+      }
+      .carousel-nav {
+        display: none !important;
+      }
+      .carousel-dots {
+        bottom: 6px !important;
+      }
+
+      /* Features Bar */
+      .features-bar {
+        padding: 12px 0 !important;
+      }
+      .features-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
+        padding: 0 10px !important;
+      }
+      .feature-item {
+        padding: 10px 12px !important;
+        border: 1px solid var(--border) !important;
+        border-radius: var(--radius-md) !important;
+        background: var(--bg-card) !important;
+        border-left: 1px solid var(--border) !important;
+        gap: 10px !important;
+      }
+      .feature-icon {
+        font-size: 22px !important;
+      }
+      .feature-text h4 {
+        font-size: 12px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 0 !important;
+      }
+      .feature-text p {
+        display: none !important;
+      }
+
+      /* Deal timer & Sections */
+      .deal-section {
+        padding: 18px 14px !important;
+        margin-bottom: 16px !important;
+      }
+      .deal-header {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        text-align: center !important;
+      }
+      .deal-title {
+        font-size: 17px !important;
+      }
+      .timer {
+        gap: 6px !important;
+      }
+      .timer-unit {
+        min-width: 44px !important;
+        padding: 6px 8px !important;
+      }
+      .timer-num {
+        font-size: 17px !important;
+      }
+      .timer-sep {
+        font-size: 16px !important;
+      }
+
+
+
+
+    }
+  </style>
+</head>
+<body>
+  <!-- =========================================================
+       EPIC AAA SCI-FI INTRO STAGE (WASLA HYPERDRIVE)
+       ========================================================= -->
+  <div id="wasla-intro" class="wasla-intro">
+    <!-- Interactive Starfield & Particle Warp Canvas -->
+    <canvas id="intro-canvas"></canvas>
+
+    <!-- Laser Scanline & Nebulae -->
+    <div class="intro-scanline"></div>
+    <div class="intro-nebula nebula-cyan"></div>
+    <div class="intro-nebula nebula-purple"></div>
+
+    <!-- Top Action Bar -->
+    <div class="intro-top-bar">
+      <div class="intro-hud-tag">
+        <span class="hud-pulse-dot"></span>
+        <span>WASLA • QUANTUM COMMERCE v3</span>
+      </div>
+      <div class="intro-top-actions">
+        <button class="intro-sound-btn" id="intro-sound-toggle" onclick="toggleIntroSound()" title="تشغيل / كتم الصوت">
+          <span id="sound-icon">🔊</span>
+          <span id="sound-label">صوت</span>
+        </button>
+        <button class="intro-skip-btn" onclick="triggerWarpLaunch(true)" title="تخطي الدخول">
+          <span>تخطي</span>
+          <span>✕</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 3D Interactive Center Stage (Follows mouse/touch tilt) -->
+    <div class="intro-center-stage" id="intro-stage">
+      <!-- Hologram Portal with Shockwave Rings & Logo -->
+      <div class="intro-hologram-wrap">
+        <div class="holo-shockwave active"></div>
+        <div class="holo-ring holo-ring-outer"></div>
+        <div class="holo-ring holo-ring-middle"></div>
+        <div class="holo-ring holo-ring-inner"></div>
+        <div class="holo-core-light"></div>
+        <div class="holo-logo-box">
+          <img src="assets/logo.png" alt="WASLA Logo" class="holo-logo-img">
+        </div>
+      </div>
+
+      <!-- 3D Glitch Typography -->
+      <div class="intro-title-box">
+        <h1 class="intro-glitch-title">WASLA</h1>
+      </div>
+      <div class="intro-arabic-slogan">وصلة • المنصة الذكية الأولى للتسوق في مصر</div>
+
+      <!-- Cyber Tech Chips -->
+      <div class="intro-chips-row">
+        <div class="intro-chip"><span>⚡</span> بحث بالذكاء الاصطناعي</div>
+        <div class="intro-chip"><span>🚀</span> شحن سريع لكل المحافظات</div>
+        <div class="intro-chip"><span>💎</span> ضمان وأمان 100%</div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="intro-btn-wrap">
+        <button class="epic-enter-btn" onclick="triggerWarpLaunch(false)">
+          <span>⚡</span>
+          <span>دخول إلى عالم وصلة</span>
+          <span class="btn-warp-arrow">←</span>
+        </button>
+      </div>
+
+      <!-- Live Auto Countdown -->
+      <div class="intro-countdown-text">
+        <span>الانطلاق التلقائي فور اكتمال المسح الضوئي...</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="top-bar-inner" id="top-bar-ticker">
+      <span>🚚 شحن مجاني على الطلبات فوق 500 ج.م</span>
+      <span>🎁 عروض حصرية كل يوم</span>
+      <span>🔒 دفع آمن 100%</span>
+      <span>↩️ إرجاع مجاني خلال 30 يوم</span>
+      <span>⭐ أكثر من 100,000 منتج</span>
+      <span>🚚 شحن مجاني على الطلبات فوق 500 ج.م</span>
+      <span>🎁 عروض حصرية كل يوم</span>
+      <span>🔒 دفع آمن 100%</span>
+      <span>↩️ إرجاع مجاني خلال 30 يوم</span>
+      <span>⭐ أكثر من 100,000 منتج</span>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <div id="navbar-placeholder"></div>
+
+  <!-- Hero Carousel -->
+  <div class="hero-carousel">
+    <!-- Slide 1 -->
+    <div class="hero-slide hero-slide-1 active">
+      <div class="hero-overlay"></div>
+      <div class="hero-content-inner">
+        <div>
+          <div class="hero-tag">✨ وصل حديثاً</div>
+          <h1 class="hero-title">
+            <span class="gold">أفضل العروض</span><br>
+            <span class="white">في مكان واحد</span>
+          </h1>
+          <p class="hero-desc">تسوق من آلاف المنتجات بأسعار لا تقاوم. إلكترونيات، أزياء، منزل، وأكثر — كل ما تحتاجه في منصة وصلة (WASLA).</p>
+          <div class="hero-btns">
+            <a href="shop.html" class="btn btn-primary btn-lg">🛒 تسوق الآن</a>
+            <a href="auth.html" class="btn btn-secondary btn-lg" id="hero-auth-btn">تسجيل الدخول</a>
+          </div>
+        </div>
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&h=400&fit=crop" alt="تسوق الآن">
+          <div class="hero-img-badge">🎉 خصم حتى 50%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2 -->
+    <div class="hero-slide hero-slide-2">
+      <div class="hero-overlay"></div>
+      <div class="hero-content-inner">
+        <div>
+          <div class="hero-tag">💻 إلكترونيات</div>
+          <h1 class="hero-title">
+            <span class="white">أحدث</span><br>
+            <span class="gold">التكنولوجيا</span>
+          </h1>
+          <p class="hero-desc">اكتشف أحدث الأجهزة الإلكترونية بأفضل الأسعار. سماعات، لاب توب، موبايلات وأكثر.</p>
+          <div class="hero-btns">
+            <a href="shop.html?category=electronics" class="btn btn-primary btn-lg">تسوق الإلكترونيات</a>
+          </div>
+        </div>
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&h=400&fit=crop" alt="إلكترونيات">
+          <div class="hero-img-badge">📱 أحدث الموديلات</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3 -->
+    <div class="hero-slide hero-slide-3">
+      <div class="hero-overlay"></div>
+      <div class="hero-content-inner">
+        <div>
+          <div class="hero-tag">👗 أزياء وموضة</div>
+          <h1 class="hero-title">
+            <span class="white">أحدث</span><br>
+            <span class="gold">صيحات الموضة</span>
+          </h1>
+          <p class="hero-desc">تشكيلة واسعة من الملابس والأحذية والإكسسوارات لأرقى الماركات بأفضل جودة وسعر في مصر.</p>
+          <div class="hero-btns">
+            <a href="shop.html?category=fashion" class="btn btn-primary btn-lg">🛒 تسوق الأزياء</a>
+            <a href="shop.html" class="btn btn-secondary btn-lg">استكشف الكل</a>
+          </div>
+        </div>
+        <div class="hero-img-wrap">
+          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&h=400&fit=crop" alt="أزياء وموضة">
+          <div class="hero-img-badge">✨ عروض الموسم</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Carousel Controls -->
+    <button class="carousel-nav prev" onclick="changeSlide(-1)">‹</button>
+    <button class="carousel-nav next" onclick="changeSlide(1)">›</button>
+    <div class="carousel-dots">
+      <div class="carousel-dot active" onclick="goToSlide(0)"></div>
+      <div class="carousel-dot" onclick="goToSlide(1)"></div>
+      <div class="carousel-dot" onclick="goToSlide(2)"></div>
+    </div>
+  </div>
+
+  <!-- Features Bar -->
+  <div class="features-bar">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-item">
+          <span class="feature-icon">🚚</span>
+          <div class="feature-text">
+            <h4>شحن سريع</h4>
+            <p>توصيل خلال 24 - 48 ساعة</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🔒</span>
+          <div class="feature-text">
+            <h4>دفع آمن</h4>
+            <p>تشفير كامل لبياناتك</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">↩️</span>
+          <div class="feature-text">
+            <h4>إرجاع مجاني</h4>
+            <p>30 يوم إرجاع بدون شروط</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <span class="feature-icon">🎧</span>
+          <div class="feature-text">
+            <h4>دعم 24/7</h4>
+            <p>فريق خدمة متاح دائماً</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Categories Section -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header flex-between">
+          <div>
+            <h2><span class="bar"></span> تسوق حسب الفئة</h2>
+            <p>اكتشف مئات المنتجات في كل فئة</p>
+          </div>
+          <a href="shop.html" class="btn btn-ghost btn-sm">عرض الكل ←</a>
+        </div>
+
+        <div class="category-grid" id="categories-grid">
+          <a href="shop.html?category=electronics" class="category-card">
+            <span class="category-icon">💻</span>
+            <span class="category-name">إلكترونيات</span>
+          </a>
+          <a href="shop.html?category=fashion" class="category-card">
+            <span class="category-icon">👗</span>
+            <span class="category-name">أزياء</span>
+          </a>
+          <a href="shop.html?category=home" class="category-card">
+            <span class="category-icon">🏠</span>
+            <span class="category-name">المنزل</span>
+          </a>
+          <a href="shop.html?category=beauty" class="category-card">
+            <span class="category-icon">💄</span>
+            <span class="category-name">جمال</span>
+          </a>
+          <a href="shop.html?category=sports" class="category-card">
+            <span class="category-icon">⚽</span>
+            <span class="category-name">رياضة</span>
+          </a>
+          <a href="shop.html?category=books" class="category-card">
+            <span class="category-icon">📚</span>
+            <span class="category-name">كتب</span>
+          </a>
+          <a href="shop.html?category=toys" class="category-card">
+            <span class="category-icon">🧸</span>
+            <span class="category-name">ألعاب</span>
+          </a>
+          <a href="shop.html?category=food" class="category-card">
+            <span class="category-icon">🍕</span>
+            <span class="category-name">طعام</span>
+          </a>
+          <a href="shop.html?category=automotive" class="category-card">
+            <span class="category-icon">🚗</span>
+            <span class="category-name">سيارات</span>
+          </a>
+          <a href="shop.html" class="category-card" style="border-color:var(--primary);background:rgba(245,166,35,0.05)">
+            <span class="category-icon">🔍</span>
+            <span class="category-name">الكل</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flash Deals -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="deal-section">
+          <div class="deal-header">
+            <div class="deal-title">
+              ⚡ عروض الفلاش السريعة (تخفيضات تصل إلى 50%)
+            </div>
+            <div class="timer" id="deal-timer">
+              <div class="timer-unit">
+                <div class="timer-num" id="t-hours">12</div>
+                <div class="timer-label">ساعة</div>
+              </div>
+              <div class="timer-sep">:</div>
+              <div class="timer-unit">
+                <div class="timer-num" id="t-mins">34</div>
+                <div class="timer-label">دقيقة</div>
+              </div>
+              <div class="timer-sep">:</div>
+              <div class="timer-unit">
+                <div class="timer-num" id="t-secs">59</div>
+                <div class="timer-label">ثانية</div>
+              </div>
+            </div>
+          </div>
+          <div class="products-grid" id="deal-products">
+            <!-- Static Initial Products (Guaranteed Non-Empty) -->
+            <div class="product-card fade-in" data-id="prod_iphone15" onclick="viewProduct('prod_iphone15')">
+              <div class="product-card-image">
+                <img src="https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=600&h=600&fit=crop" alt="Apple iPhone 15 Pro Max">
+                <span class="product-card-badge">-10%</span>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+                <div class="product-card-name">هاتف Apple iPhone 15 Pro Max سعة 256 جيجابايت تيتانيوم أزرق</div>
+                <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(312)</span></div>
+                <div class="product-card-price">
+                  <span class="price-currency">ج.م</span>
+                  <span class="price-current">61,999</span>
+                  <span class="price-old">68,500</span>
+                </div>
+                <div class="product-card-footer">
+                  <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_iphone15')">🛒 أضف للسلة</button>
+                  <a href="product.html?id=prod_iphone15" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-card fade-in" data-id="prod_sony_xm5" onclick="viewProduct('prod_sony_xm5')">
+              <div class="product-card-image">
+                <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop" alt="Sony WH-1000XM5">
+                <span class="product-card-badge">-15%</span>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+                <div class="product-card-name">سماعات رأس لاسلكية Sony WH-1000XM5 عازلة للضوضاء</div>
+                <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(420)</span></div>
+                <div class="product-card-price">
+                  <span class="price-currency">ج.م</span>
+                  <span class="price-current">15,499</span>
+                  <span class="price-old">18,200</span>
+                </div>
+                <div class="product-card-footer">
+                  <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_sony_xm5')">🛒 أضف للسلة</button>
+                  <a href="product.html?id=prod_sony_xm5" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-card fade-in" data-id="prod_ps5_slim" onclick="viewProduct('prod_ps5_slim')">
+              <div class="product-card-image">
+                <img src="https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=600&h=600&fit=crop" alt="PlayStation 5 Slim">
+                <span class="product-card-badge">-11%</span>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+                <div class="product-card-name">جهاز سوني PlayStation 5 Slim إصدار الأقراص مع ذراع إضافي</div>
+                <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(512)</span></div>
+                <div class="product-card-price">
+                  <span class="price-currency">ج.م</span>
+                  <span class="price-current">29,800</span>
+                  <span class="price-old">33,500</span>
+                </div>
+                <div class="product-card-footer">
+                  <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_ps5_slim')">🛒 أضف للسلة</button>
+                  <a href="product.html?id=prod_ps5_slim" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+                </div>
+              </div>
+            </div>
+
+            <div class="product-card fade-in" data-id="prod_philips_airfryer" onclick="viewProduct('prod_philips_airfryer')">
+              <div class="product-card-image">
+                <img src="https://images.unsplash.com/photo-1585515320310-259814833e62?w=600&h=600&fit=crop" alt="Philips Airfryer XXL">
+                <span class="product-card-badge">-17%</span>
+              </div>
+              <div class="product-card-body">
+                <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+                <div class="product-card-name">قلاية هوائية فيليبس Philips Airfryer XXL سعة 7.2 لتر</div>
+                <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(480)</span></div>
+                <div class="product-card-price">
+                  <span class="price-currency">ج.م</span>
+                  <span class="price-current">7,899</span>
+                  <span class="price-old">9,500</span>
+                </div>
+                <div class="product-card-footer">
+                  <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_philips_airfryer')">🛒 أضف للسلة</button>
+                  <a href="product.html?id=prod_philips_airfryer" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured / Best Sellers Products -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-header flex-between">
+          <div>
+            <h2><span class="bar"></span> الأكثر طلباً ومبيعاً 🔥</h2>
+            <p>المنتجات الأعلى تقييماً وإقبالاً من المشترين هذا الأسبوع</p>
+          </div>
+          <a href="shop.html" class="btn btn-ghost btn-sm">عرض كل المنتجات ←</a>
+        </div>
+        <div class="products-grid" id="featured-products">
+          <div class="product-card fade-in" data-id="prod_nike_airmax" onclick="viewProduct('prod_nike_airmax')">
+            <div class="product-card-image">
+              <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop" alt="Nike Air Max 270">
+              <span class="product-card-badge">-19%</span>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+              <div class="product-card-name">حذاء رياضي Nike Air Max 270 للرجال بتصميم عصري وأقصى راحة</div>
+              <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(290)</span></div>
+              <div class="product-card-price">
+                <span class="price-currency">ج.م</span>
+                <span class="price-current">3,899</span>
+                <span class="price-old">4,799</span>
+              </div>
+              <div class="product-card-footer">
+                <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_nike_airmax')">🛒 أضف للسلة</button>
+                <a href="product.html?id=prod_nike_airmax" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card fade-in" data-id="prod_dior_sauvage" onclick="viewProduct('prod_dior_sauvage')">
+            <div class="product-card-image">
+              <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?w=600&h=600&fit=crop" alt="Dior Sauvage">
+              <span class="product-card-badge">-15%</span>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+              <div class="product-card-name">عطر Dior Sauvage للرجال أو دو بارفان حجم 100 مل أصلي 100%</div>
+              <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(520)</span></div>
+              <div class="product-card-price">
+                <span class="price-currency">ج.م</span>
+                <span class="price-current">6,400</span>
+                <span class="price-old">7,500</span>
+              </div>
+              <div class="product-card-footer">
+                <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_dior_sauvage')">🛒 أضف للسلة</button>
+                <a href="product.html?id=prod_dior_sauvage" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card fade-in" data-id="prod_apple_watch9" onclick="viewProduct('prod_apple_watch9')">
+            <div class="product-card-image">
+              <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=600&h=600&fit=crop" alt="Apple Watch Series 9">
+              <span class="product-card-badge">-14%</span>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+              <div class="product-card-name">ساعة ذكية Apple Watch Series 9 إطار ألومنيوم مقاس 45 مم</div>
+              <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(220)</span></div>
+              <div class="product-card-price">
+                <span class="price-currency">ج.م</span>
+                <span class="price-current">18,999</span>
+                <span class="price-old">21,999</span>
+              </div>
+              <div class="product-card-footer">
+                <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_apple_watch9')">🛒 أضف للسلة</button>
+                <a href="product.html?id=prod_apple_watch9" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="product-card fade-in" data-id="prod_cerave_cleanser" onclick="viewProduct('prod_cerave_cleanser')">
+            <div class="product-card-image">
+              <img src="https://images.unsplash.com/photo-1608248597359-59752390a88c?w=600&h=600&fit=crop" alt="CeraVe Foaming Cleanser">
+              <span class="product-card-badge">-25%</span>
+            </div>
+            <div class="product-card-body">
+              <div class="product-card-seller">🏪 متجر وصلة إكسبريس</div>
+              <div class="product-card-name">غسول رغوي للبشرة CeraVe Foaming Cleanser بحمض الهيالورونيك 473 مل</div>
+              <div class="product-card-rating"><span class="stars">★★★★★</span> <span class="rating-count">(680)</span></div>
+              <div class="product-card-price">
+                <span class="price-currency">ج.م</span>
+                <span class="price-current">640</span>
+                <span class="price-old">850</span>
+              </div>
+              <div class="product-card-footer">
+                <button class="btn btn-primary btn-sm" style="flex:1" onclick="addToCart(event, 'prod_cerave_cleanser')">🛒 أضف للسلة</button>
+                <a href="product.html?id=prod_cerave_cleanser" class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation()">👁️</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Promo Banner 1 -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="promo-banner" style="background: linear-gradient(135deg, #0f3460, #16213e);">
+          <div class="promo-text">
+            <h3>💻 عالم التكنولوجيا والإلكترونيات</h3>
+            <p>أحدث الهواتف الذكية، الحواسيب المحمولة والسماعات العازلة للضوضاء بأفضل الأسعار الرسمية</p>
+          </div>
+          <div class="promo-action">
+            <a href="shop.html?category=electronics" class="btn btn-primary" style="font-weight:800">تصفح الإلكترونيات</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Electronics Section -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-header flex-between">
+          <div>
+            <h2><span class="bar"></span> أجهزة وإلكترونيات مختارة 📱</h2>
+            <p>أفضل العلامات التجارية العالمية (Apple, Samsung, Sony, Dell)</p>
+          </div>
+          <a href="shop.html?category=electronics" class="btn btn-ghost btn-sm">المزيد من الإلكترونيات ←</a>
+        </div>
+        <div class="products-grid" id="electronics-products"></div>
+      </div>
+    </section>
+
+    <!-- Fashion Section -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-header flex-between">
+          <div>
+            <h2><span class="bar"></span> صيحات الموضة والأناقة 👗</h2>
+            <p>أحذية رياضية أصلية، ساعات فاخرة وإكسسوارات عصرية</p>
+          </div>
+          <a href="shop.html?category=fashion" class="btn btn-ghost btn-sm">المزيد من الأزياء ←</a>
+        </div>
+        <div class="products-grid" id="fashion-products"></div>
+      </div>
+    </section>
+
+    <!-- Home & Kitchen Section -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-header flex-between">
+          <div>
+            <h2><span class="bar"></span> المنزل والمطبخ العصري 🏠</h2>
+            <p>أجهزة طهي ذكية، قلايات هوائية، وأدوات منزلية متطورة</p>
+          </div>
+          <a href="shop.html?category=home" class="btn btn-ghost btn-sm">مستلزمات المنزل ←</a>
+        </div>
+        <div class="products-grid" id="home-products"></div>
+      </div>
+    </section>
+
+    <!-- Beauty & Care Section -->
+    <section class="section" style="padding-top:0">
+      <div class="container">
+        <div class="section-header flex-between">
+          <div>
+            <h2><span class="bar"></span> الجمال والعطور الأصلية ✨</h2>
+            <p>عطور فرنسية فاخرة، عناية بالبشرة ومستحضرات تجميل أصلية 100%</p>
+          </div>
+          <a href="shop.html?category=beauty" class="btn btn-ghost btn-sm">قسم الجمال ←</a>
+        </div>
+        <div class="products-grid" id="beauty-products"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="logo" style="display:flex;align-items:center;gap:10px">
+            <img src="assets/logo.png" alt="WASLA Logo" style="width:36px;height:36px;border-radius:50%;box-shadow:0 0 12px rgba(0,229,255,0.6)">
+            <span>WASLA <span style="color:var(--brand-cyan);font-size:14px">وصلة</span></span>
+          </div>
+          <p>منصة التجارة الإلكترونية الذكية الرائدة في مصر. تسوق أفضل المنتجات بأفضل تجربة مستخدم ودعم محرك بحث يفهم اللهجة الدارجة.</p>
+          <div class="footer-social">
+            <div class="social-btn">📘</div>
+            <div class="social-btn">📸</div>
+            <div class="social-btn">🐦</div>
+            <div class="social-btn">▶️</div>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4>روابط سريعة</h4>
+          <ul>
+            <li><a href="index.html">الرئيسية</a></li>
+            <li><a href="shop.html">المتجر</a></li>
+            <li><a href="auth.html">تسجيل الدخول</a></li>
+            <li><a href="auth.html#register">إنشاء حساب</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>الفئات</h4>
+          <ul>
+            <li><a href="shop.html?category=electronics">إلكترونيات</a></li>
+            <li><a href="shop.html?category=fashion">أزياء</a></li>
+            <li><a href="shop.html?category=home">المنزل</a></li>
+            <li><a href="shop.html?category=beauty">جمال</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>المساعدة</h4>
+          <ul>
+            <li><a href="#">سياسة الإرجاع</a></li>
+            <li><a href="#">الشحن والتوصيل</a></li>
+            <li><a href="#">الأسئلة الشائعة</a></li>
+            <li><a href="#">تواصل معنا</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 WASLA (وصلة). جميع الحقوق محفوظة.</span>
+        <a href="javascript:location.reload()" style="color:var(--brand-cyan);font-size:12px;text-decoration:underline;cursor:pointer">✨ إعادة تشغيل دخلة الموقع</a>
+        <span>صُنع بـ ❤️ في مصر</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="scroll-top" id="scroll-top">↑</button>
+
+  <script src="js/app.js"></script>
+  <script>
+    // ===== CAROUSEL =====
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.hero-slide');
+    const dots = document.querySelectorAll('.carousel-dot');
+    let autoSlide;
+
+    function goToSlide(n) {
+      slides[currentSlide].classList.remove('active');
+      dots[currentSlide].classList.remove('active');
+      currentSlide = (n + slides.length) % slides.length;
+      slides[currentSlide].classList.add('active');
+      dots[currentSlide].classList.add('active');
+    }
+
+    function changeSlide(dir) {
+      goToSlide(currentSlide + dir);
+      resetAutoSlide();
+    }
+
+    function resetAutoSlide() {
+      clearInterval(autoSlide);
+      autoSlide = setInterval(() => changeSlide(1), 5000);
+    }
+
+    resetAutoSlide();
+
+    // ===== TIMER =====
+    function startDealTimer() {
+      const endTime = new Date();
+      endTime.setHours(23, 59, 59, 0);
+      
+      function update() {
+        const now = new Date();
+        let diff = endTime - now;
+        if (diff < 0) diff = 0;
+        const h = Math.floor(diff / 3600000);
+        const m = Math.floor((diff % 3600000) / 60000);
+        const s = Math.floor((diff % 60000) / 1000);
+        document.getElementById('t-hours').textContent = String(h).padStart(2, '0');
+        document.getElementById('t-mins').textContent = String(m).padStart(2, '0');
+        document.getElementById('t-secs').textContent = String(s).padStart(2, '0');
+      }
+
+      update();
+      setInterval(update, 1000);
+    }
+
+    // ===== LOAD PRODUCTS =====
+    function loadProducts() {
+      // Ensure seed data is populated
+      if (typeof seedData === 'function') seedData();
+
+      const allProducts = ProductsDB.getAll();
+
+      // Helper to fill grid
+      const fillGrid = (id, items) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = items && items.length > 0
+            ? items.map(p => renderProductCard(p)).join('')
+            : '<div class="empty-state" style="grid-column:1/-1"><p style="color:var(--text-muted)">لا توجد منتجات حالياً</p></div>';
+        }
+      };
+
+      // Deals: items with biggest discount
+      const deals = allProducts
+        .filter(p => p.oldPrice && p.oldPrice > p.price)
+        .sort((a, b) => ((b.oldPrice - b.price) / b.oldPrice) - ((a.oldPrice - a.price) / a.oldPrice))
+        .slice(0, 8);
+      fillGrid('deal-products', deals.length > 0 ? deals : allProducts.slice(0, 8));
+
+      // Featured: highest sold / rated
+      const featured = [...allProducts]
+        .sort((a, b) => (parseFloat(b.rating || 0) * (b.sold || 1)) - (parseFloat(a.rating || 0) * (a.sold || 1)))
+        .slice(0, 8);
+      fillGrid('featured-products', featured);
+
+      // Category: Electronics
+      const electronics = allProducts.filter(p => p.category === 'electronics').slice(0, 8);
+      fillGrid('electronics-products', electronics);
+
+      // Category: Fashion
+      const fashion = allProducts.filter(p => p.category === 'fashion').slice(0, 6);
+      fillGrid('fashion-products', fashion);
+
+      // Category: Home
+      const home = allProducts.filter(p => p.category === 'home').slice(0, 6);
+      fillGrid('home-products', home);
+
+      // Category: Beauty
+      const beauty = allProducts.filter(p => p.category === 'beauty').slice(0, 6);
+      fillGrid('beauty-products', beauty);
+
+    }
+
+    // =========================================================
+    // EPIC AAA WASLA HYPERDRIVE & PARTICLE WARP ENGINE
+    // =========================================================
+    let _audioContext = null;
+    let _soundEnabled = true;
+    let _warpTriggered = false;
+    let _countdownTimer = null;
+
+    // Web Audio Synthesizer (Zero MP3 dependencies)
+    function playSciFiLaunchSound() {
+      if (!_soundEnabled) return;
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        if (!_audioContext) _audioContext = new AudioCtx();
+        if (_audioContext.state === 'suspended') _audioContext.resume();
+
+        const now = _audioContext.currentTime;
+
+        // 1. Deep Sub Bass Rumble (Frequency Sweep 160Hz -> 35Hz)
+        const oscSub = _audioContext.createOscillator();
+        const gainSub = _audioContext.createGain();
+        oscSub.type = 'sine';
+        oscSub.frequency.setValueAtTime(160, now);
+        oscSub.frequency.exponentialRampToValueAtTime(35, now + 0.85);
+
+        gainSub.gain.setValueAtTime(0.4, now);
+        gainSub.gain.exponentialRampToValueAtTime(0.001, now + 0.9);
+
+        oscSub.connect(gainSub);
+        gainSub.connect(_audioContext.destination);
+        oscSub.start(now);
+        oscSub.stop(now + 0.95);
+
+        // 2. Futuristic Crystal Shimmer / Energy Beam Chime
+        const oscChime = _audioContext.createOscillator();
+        const gainChime = _audioContext.createGain();
+        oscChime.type = 'triangle';
+        oscChime.frequency.setValueAtTime(520, now);
+        oscChime.frequency.exponentialRampToValueAtTime(1320, now + 0.4);
+        oscChime.frequency.exponentialRampToValueAtTime(2200, now + 0.8);
+
+        gainChime.gain.setValueAtTime(0.18, now);
+        gainChime.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+
+        oscChime.connect(gainChime);
+        gainChime.connect(_audioContext.destination);
+        oscChime.start(now);
+        oscChime.stop(now + 0.9);
+      } catch (err) {
+        // Audio policy or unsupported - silent fallback
+      }
+    }
+
+    function toggleIntroSound() {
+      _soundEnabled = !_soundEnabled;
+      const icon = document.getElementById('sound-icon');
+      const label = document.getElementById('sound-label');
+      if (icon) icon.textContent = _soundEnabled ? '🔊' : '🔇';
+      if (label) label.textContent = _soundEnabled ? 'صوت' : 'مكتوم';
+    }
+
+    // Canvas Particle Warp System
+    function initIntroCanvas() {
+      const canvas = document.getElementById('intro-canvas');
+      if (!canvas) return null;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      // 180 3D Star Particles
+      const starCount = window.innerWidth < 600 ? 100 : 180;
+      const stars = [];
+      for (let i = 0; i < starCount; i++) {
+        stars.push({
+          x: (Math.random() - 0.5) * w * 1.5,
+          y: (Math.random() - 0.5) * h * 1.5,
+          z: Math.random() * w,
+          prevZ: 0,
+          color: Math.random() > 0.4 ? '#00e5ff' : (Math.random() > 0.5 ? '#0084ff' : '#ffffff'),
+          size: Math.random() * 1.8 + 0.8
+        });
+      }
+
+      let warpSpeed = 1.2;
+      let isWarping = false;
+      let animId = null;
+
+      function render() {
+        ctx.fillStyle = isWarping ? 'rgba(3, 4, 11, 0.35)' : 'rgba(3, 4, 11, 0.75)';
+        ctx.fillRect(0, 0, w, h);
+
+        const cx = w / 2;
+        const cy = h / 2;
+
+        if (isWarping) {
+          warpSpeed = Math.min(warpSpeed * 1.09, 45); // Hyperdrive acceleration!
+        }
+
+        // Draw and update stars
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          s.prevZ = s.z;
+          s.z -= warpSpeed;
+
+          if (s.z <= 0) {
+            s.x = (Math.random() - 0.5) * w * 1.5;
+            s.y = (Math.random() - 0.5) * h * 1.5;
+            s.z = w;
+            s.prevZ = s.z;
+          }
+
+          // 3D Perspective Projection
+          const k = 250 / s.z;
+          const px = s.x * k + cx;
+          const py = s.y * k + cy;
+
+          if (px < 0 || px >= w || py < 0 || py >= h) continue;
+
+          if (isWarping) {
+            // Laser Speed Streaks
+            const prevK = 250 / s.prevZ;
+            const prevPx = s.x * prevK + cx;
+            const prevPy = s.y * prevK + cy;
+
+            ctx.beginPath();
+            ctx.strokeStyle = s.color;
+            ctx.lineWidth = Math.min((1 - s.z / w) * 3.5, 4);
+            ctx.moveTo(prevPx, prevPy);
+            ctx.lineTo(px, py);
+            ctx.stroke();
+          } else {
+            // Glowing Points
+            const radius = (1 - s.z / w) * s.size;
+            ctx.beginPath();
+            ctx.fillStyle = s.color;
+            ctx.shadowBlur = 8;
+            ctx.shadowColor = s.color;
+            ctx.arc(px, py, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        }
+
+        // Connecting constellation lines (when idle)
+        if (!isWarping && window.innerWidth >= 600) {
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.08)';
+          ctx.lineWidth = 0.8;
+          for (let i = 0; i < 30; i++) {
+            const a = stars[i];
+            const ak = 250 / a.z;
+            const ax = a.x * ak + cx;
+            const ay = a.y * ak + cy;
+            for (let j = i + 1; j < 30; j++) {
+              const b = stars[j];
+              const bk = 250 / b.z;
+              const bx = b.x * bk + cx;
+              const by = b.y * bk + cy;
+              const dist = Math.hypot(ax - bx, ay - by);
+              if (dist < 90) {
+                ctx.beginPath();
+                ctx.moveTo(ax, ay);
+                ctx.lineTo(bx, by);
+                ctx.stroke();
+              }
+            }
+          }
+        }
+
+        animId = requestAnimationFrame(render);
+      }
+
+      animId = requestAnimationFrame(render);
+
+      return {
+        startWarp: () => { isWarping = true; },
+        stop: () => { if (animId) cancelAnimationFrame(animId); }
+      };
+    }
+
+    // 3D Tilt Interaction
+    function init3dTilt() {
+      const stage = document.getElementById('intro-stage');
+      if (!stage) return;
+
+      const handleMove = (clientX, clientY) => {
+        const cx = window.innerWidth / 2;
+        const cy = window.innerHeight / 2;
+        const dx = (clientX - cx) / cx;
+        const dy = (clientY - cy) / cy;
+        const tiltX = -dy * 12;
+        const tiltY = dx * 14;
+        stage.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      };
+
+      window.addEventListener('mousemove', (e) => {
+        handleMove(e.clientX, e.clientY);
+      }, { passive: true });
+
+      window.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0]) {
+          handleMove(e.touches[0].clientX, e.touches[0].clientY);
+        }
+      }, { passive: true });
+    }
+
+    // Launch Trigger (Hyperdrive Jump)
+    function triggerWarpLaunch(instant = false) {
+      if (_warpTriggered) return;
+      _warpTriggered = true;
+
+      if (_countdownTimer) clearInterval(_countdownTimer);
+
+      const introEl = document.getElementById('wasla-intro');
+      if (!introEl) return;
+
+      if (instant) {
+        introEl.classList.add('intro-warp-active');
+        setTimeout(() => {
+          if (window._canvasEngine) window._canvasEngine.stop();
+          try { introEl.remove(); } catch (e) {}
+        }, 500);
+        return;
+      }
+
+      // Play Sound
+      playSciFiLaunchSound();
+
+      // Trigger Hyperdrive Warp in Canvas
+      if (window._canvasEngine) window._canvasEngine.startWarp();
+
+      // Fast Flash & Exit
+      setTimeout(() => {
+        introEl.classList.add('intro-warp-active');
+      }, 120);
+
+      setTimeout(() => {
+        if (window._canvasEngine) window._canvasEngine.stop();
+        try { introEl.remove(); } catch (e) {}
+      }, 600);
+    }
+
+    // Main Intro Controller
+    function startWaslaEpicIntro() {
+      const introEl = document.getElementById('wasla-intro');
+      if (!introEl) return;
+
+      // Start Canvas Engine
+      window._canvasEngine = initIntroCanvas();
+
+      // Start 3D Tilt
+      init3dTilt();
+
+      // Snappy single scanline sweep: enters immediately when line completes
+      const scanline = document.querySelector('.intro-scanline');
+      if (scanline) {
+        scanline.addEventListener('animationend', () => {
+          setTimeout(() => {
+            triggerWarpLaunch(false);
+          }, 40);
+        }, { once: true });
+      }
+
+      // Safe fallback timer (1.3s)
+      _countdownTimer = setTimeout(() => {
+        triggerWarpLaunch(false);
+      }, 1300);
+    }
+
+    function updateHeroAuthButtons() {
+      const authBtn = document.getElementById('hero-auth-btn');
+      if (authBtn && Auth && Auth.isLoggedIn()) {
+        if (Auth.isMerchant()) {
+          authBtn.href = 'merchant.html';
+          authBtn.innerHTML = '🏪 لوحة التاجر';
+        } else {
+          authBtn.href = 'shop.html';
+          const name = Auth.currentUser?.name ? Auth.currentUser.name.split(' ')[0] : 'حسابك';
+          authBtn.innerHTML = '👋 مرحباً ' + name;
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      startWaslaEpicIntro();
+      loadProducts();
+      startDealTimer();
+      updateHeroAuthButtons();
+    });
+  </script>
+</body>
+</html>
