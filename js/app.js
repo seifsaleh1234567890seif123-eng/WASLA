@@ -1177,6 +1177,8 @@ function renderProductCard(product, showActions = true) {
       <div class="product-card-image">
         <img src="${product.image || 'https://via.placeholder.com/400x400/1e1e38/f5a623?text=منتج'}" 
              alt="${product.name}" 
+             loading="lazy"
+             decoding="async"
              onerror="this.src='https://via.placeholder.com/400x400/1e1e38/f5a623?text=منتج'">
         ${discount > 0 ? `<span class="product-card-badge">-${discount}%</span>` : ''}
         <div class="product-card-actions">
@@ -1447,9 +1449,16 @@ function initNavDropdown() {
 function initScrollTop() {
   const btn = document.getElementById('scroll-top');
   if (!btn) return;
+  let ticking = false;
   window.addEventListener('scroll', () => {
-    btn.classList.toggle('show', window.scrollY > 300);
-  });
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        btn.classList.toggle('show', window.scrollY > 300);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
   btn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 }
 

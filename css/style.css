@@ -888,6 +888,9 @@ textarea.form-input {
   position: relative;
   display: flex;
   flex-direction: column;
+  contain: content;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 330px;
 }
 
 .product-card:hover {
@@ -1683,6 +1686,10 @@ input[type="radio"]:checked::after {
     padding: 7px 10px !important;
     font-size: 15px !important;
     border-radius: 10px !important;
+  }
+  .navbar {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
   }
   .nav-login-pill {
     padding: 6px 10px !important;
