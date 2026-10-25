@@ -1473,31 +1473,15 @@ try {
 
 // ===== PREVENT SCREEN ZOOM (MOBILE & DESKTOP) =====
 function initAntiZoom() {
-  // Prevent iOS Safari pinch gesture zoom
-  document.addEventListener('gesturestart', function (e) {
-    e.preventDefault();
-  }, { passive: false });
-  document.addEventListener('gesturechange', function (e) {
-    e.preventDefault();
-  }, { passive: false });
-  document.addEventListener('gestureend', function (e) {
-    e.preventDefault();
-  }, { passive: false });
-
-  // Prevent double tap zoom on mobile (except form controls)
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', function (e) {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-      if (!['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].includes(e.target.tagName)) {
-        e.preventDefault();
-      }
-    }
-    lastTouchEnd = now;
-  }, { passive: false });
+  // Prevent iOS Safari proprietary pinch gesture zoom (only on iOS)
+  if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+    document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive: false });
+    document.addEventListener('gestureend', (e) => e.preventDefault(), { passive: false });
+  }
 
   // Prevent Ctrl + Mouse Wheel zoom on desktop
-  window.addEventListener('wheel', function (e) {
+  window.addEventListener('wheel', (e) => {
     if (e.ctrlKey) {
       e.preventDefault();
     }

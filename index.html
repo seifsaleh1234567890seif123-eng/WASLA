@@ -1651,10 +1651,11 @@
       let w = canvas.width = window.innerWidth;
       let h = canvas.height = window.innerHeight;
 
-      window.addEventListener('resize', () => {
+      const handleResize = () => {
         w = canvas.width = window.innerWidth;
         h = canvas.height = window.innerHeight;
-      });
+      };
+      window.addEventListener('resize', handleResize, { passive: true });
 
       // 180 3D Star Particles
       const starCount = window.innerWidth < 600 ? 100 : 180;
@@ -1672,9 +1673,12 @@
 
       let warpSpeed = 1.2;
       let isWarping = false;
+      let isStopped = false;
       let animId = null;
 
       function render() {
+        if (isStopped) return;
+
         ctx.fillStyle = isWarping ? 'rgba(3, 4, 11, 0.35)' : 'rgba(3, 4, 11, 0.75)';
         ctx.fillRect(0, 0, w, h);
 
@@ -1755,14 +1759,20 @@
           }
         }
 
-        animId = requestAnimationFrame(render);
+        if (!isStopped) {
+          animId = requestAnimationFrame(render);
+        }
       }
 
       animId = requestAnimationFrame(render);
 
       return {
         startWarp: () => { isWarping = true; },
-        stop: () => { if (animId) cancelAnimationFrame(animId); }
+        stop: () => {
+          isStopped = true;
+          if (animId) cancelAnimationFrame(animId);
+          window.removeEventListener('resize', handleResize);
+        }
       };
     }
 
@@ -1781,15 +1791,20 @@
         stage.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
       };
 
-      window.addEventListener('mousemove', (e) => {
-        handleMove(e.clientX, e.clientY);
-      }, { passive: true });
-
-      window.addEventListener('touchmove', (e) => {
+      const onMouseMove = (e) => handleMove(e.clientX, e.clientY);
+      const onTouchMove = (e) => {
         if (e.touches && e.touches[0]) {
           handleMove(e.touches[0].clientX, e.touches[0].clientY);
         }
-      }, { passive: true });
+      };
+
+      window.addEventListener('mousemove', onMouseMove, { passive: true });
+      window.addEventListener('touchmove', onTouchMove, { passive: true });
+
+      window._cleanIntroListeners = () => {
+        window.removeEventListener('mousemove', onMouseMove);
+        window.removeEventListener('touchmove', onTouchMove);
+      };
     }
 
     // Launch Trigger (Hyperdrive Jump)
@@ -1806,6 +1821,7 @@
         introEl.classList.add('intro-warp-active');
         setTimeout(() => {
           if (window._canvasEngine) window._canvasEngine.stop();
+          if (window._cleanIntroListeners) window._cleanIntroListeners();
           try { introEl.remove(); } catch (e) {}
         }, 500);
         return;
@@ -1824,6 +1840,7 @@
 
       setTimeout(() => {
         if (window._canvasEngine) window._canvasEngine.stop();
+        if (window._cleanIntroListeners) window._cleanIntroListeners();
         try { introEl.remove(); } catch (e) {}
       }, 600);
     }
