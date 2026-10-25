@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>WASLA | وصلة - منصة التجارة الإلكترونية الذكية</title>
   <meta name="description" content="منصة WASLA (وصلة) - تسوق من آلاف المنتجات بأفضل الأسعار وبحث ذكي بالعامية والفصحى">
   <link rel="icon" type="image/png" href="assets/logo.png">
@@ -498,6 +498,22 @@
     .hero-slide-1 { background: linear-gradient(135deg, #0f3460 0%, #1a1a2e 50%, #16213e 100%); }
     .hero-slide-2 { background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 50%, #1a1a2e 100%); }
     .hero-slide-3 { background: linear-gradient(135deg, #0a1f0a 0%, #1a2e1a 50%, #0d1a0d 100%); }
+
+    /* Light Theme Hero & Deal Styles */
+    [data-theme="light"] .hero-slide-1 { background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 60%, #e2e8f0 100%); }
+    [data-theme="light"] .hero-slide-2 { background: linear-gradient(135deg, #fef3c7 0%, #ffffff 60%, #f1f5f9 100%); }
+    [data-theme="light"] .hero-slide-3 { background: linear-gradient(135deg, #fce7f3 0%, #ffffff 60%, #f1f5f9 100%); }
+    [data-theme="light"] .hero-title .white { color: #0f172a !important; }
+    [data-theme="light"] .hero-desc { color: #334155 !important; }
+    [data-theme="light"] .deal-section {
+      background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 50%, #fed7aa 100%);
+      border: 1px solid #fed7aa;
+      box-shadow: 0 4px 20px rgba(245, 158, 11, 0.12);
+    }
+    [data-theme="light"] .deal-title { color: #7c2d12; }
+    [data-theme="light"] .timer-unit { background: rgba(255, 255, 255, 0.9); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    [data-theme="light"] .timer-num { color: #c2410c; }
+    [data-theme="light"] .timer-sep { color: #ea580c; }
 
     .hero-overlay {
       position: absolute;

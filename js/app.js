@@ -32,6 +32,63 @@ const Storage = {
   }
 };
 
+// ===== THEME CONTROLLER (DARK / LIGHT MODE) =====
+const Theme = {
+  current: 'dark',
+
+  init() {
+    let saved = null;
+    try { saved = localStorage.getItem('wasla_theme'); } catch (e) {}
+    if (saved === 'light' || saved === 'dark') {
+      this.current = saved;
+    } else {
+      this.current = 'dark';
+    }
+    this.apply();
+  },
+
+  apply() {
+    document.documentElement.setAttribute('data-theme', this.current);
+    try { localStorage.setItem('wasla_theme', this.current); } catch (e) {}
+    this.updateUI();
+  },
+
+  set(theme) {
+    this.current = theme;
+    this.apply();
+  },
+
+  toggle() {
+    this.current = this.current === 'dark' ? 'light' : 'dark';
+    this.apply();
+    if (typeof showToast === 'function') {
+      showToast(this.current === 'light' ? '☀️ تم تفعيل الوضع الفاتح' : '🌙 تم تفعيل الوضع الداكن', 'info');
+    }
+  },
+
+  updateUI() {
+    const isDark = this.current === 'dark';
+    // If currently dark, button displays Sun (☀️ فاتح) to switch to Light mode
+    // If currently light, button displays Moon (🌙 داكن) to switch to Dark mode
+    document.querySelectorAll('.theme-icon').forEach(icon => {
+      icon.textContent = isDark ? '☀️' : '🌙';
+    });
+    document.querySelectorAll('.theme-label').forEach(label => {
+      label.textContent = isDark ? 'فاتح' : 'داكن';
+    });
+    const toggleBtn = document.getElementById('theme-toggle');
+    if (toggleBtn) {
+      toggleBtn.title = isDark ? 'التبديل إلى الوضع الفاتح (النهار)' : 'التبديل إلى الوضع الداكن (الليل)';
+    }
+  }
+};
+
+// Immediate application to prevent flicker
+try {
+  const _savedTheme = localStorage.getItem('wasla_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', _savedTheme);
+} catch (e) {}
+
 // ===== AUTH STATE =====
 const Auth = {
   currentUser: null,
@@ -1210,6 +1267,12 @@ function renderNavbar(activePage = '') {
       </div>
       
       <div class="navbar-actions">
+        <!-- Theme Toggle (Dark / Light) -->
+        <button class="theme-toggle-btn" id="theme-toggle" onclick="Theme.toggle()" title="${Theme.current === 'dark' ? 'التبديل إلى الوضع الفاتح (النهار)' : 'التبديل إلى الوضع الداكن (الليل)'}">
+          <span class="theme-icon">${Theme.current === 'dark' ? '☀️' : '🌙'}</span>
+          <span class="theme-label nav-label-desktop">${Theme.current === 'dark' ? 'فاتح' : 'داكن'}</span>
+        </button>
+
         <!-- Desktop only Store link (Mobile accesses via bottom nav) -->
         <a href="shop.html" class="nav-icon-btn nav-desktop-only" id="nav-shop-link">
           <span>🛍️</span><span style="font-size:13px;font-weight:700">المتجر</span>
@@ -1328,6 +1391,13 @@ function openUserAccountSheet() {
       ${user.phone ? `<p style="font-size:12px;color:var(--text-muted);margin-bottom:16px">📱 ${user.phone}</p>` : '<div style="margin-bottom:16px"></div>'}
       
       <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bg-input);padding:8px 12px;border-radius:var(--radius-md);border:1px solid var(--border)">
+          <span style="font-size:12px;font-weight:700">المظهر (داكن / فاتح)</span>
+          <button class="theme-toggle-btn" onclick="Theme.toggle()" style="padding:4px 10px;font-size:11px">
+            <span class="theme-icon">${Theme.current === 'dark' ? '☀️' : '🌙'}</span>
+            <span class="theme-label">${Theme.current === 'dark' ? 'فاتح' : 'داكن'}</span>
+          </button>
+        </div>
         <a href="shop.html" class="btn btn-primary btn-sm" onclick="closeUserAccountSheet()">🛍️ تصفح المنتجات</a>
         <a href="cart.html" class="btn btn-secondary btn-sm" onclick="closeUserAccountSheet()">🛒 سلة المشتريات</a>
         <button class="btn btn-danger btn-sm" onclick="Auth.logout()" style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.3);color:#ef4444;margin-top:4px;">
@@ -1385,14 +1455,50 @@ function initScrollTop() {
 
 // ===== IMMEDIATE BOOTSTRAP =====
 try {
+  Theme.init();
   Auth.init();
   seedData();
 } catch (e) {
   console.warn('Initial seed error:', e);
 }
 
+// ===== PREVENT SCREEN ZOOM (MOBILE & DESKTOP) =====
+function initAntiZoom() {
+  // Prevent iOS Safari pinch gesture zoom
+  document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gesturechange', function (e) {
+    e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('gestureend', function (e) {
+    e.preventDefault();
+  }, { passive: false });
+
+  // Prevent double tap zoom on mobile (except form controls)
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function (e) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      if (!['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].includes(e.target.tagName)) {
+        e.preventDefault();
+      }
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
+
+  // Prevent Ctrl + Mouse Wheel zoom on desktop
+  window.addEventListener('wheel', function (e) {
+    if (e.ctrlKey) {
+      e.preventDefault();
+    }
+  }, { passive: false });
+}
+
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
+  initAntiZoom();
+  Theme.init();
   Auth.init();
   seedData();
   

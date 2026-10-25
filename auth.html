@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>تسجيل الدخول وإنشاء حساب - WASLA | وصلة</title>
   <link rel="icon" type="image/png" href="assets/logo.png">
   <link rel="stylesheet" href="css/style.css">
@@ -176,9 +176,21 @@
       .auth-right { padding: 24px 16px; }
       .auth-box { max-width: 440px; }
     }
+
+    [data-theme="light"] .auth-page { background: #f8fafc; }
+    [data-theme="light"] .auth-right { background: #ffffff; }
+    [data-theme="light"] .auth-box { background: #ffffff; }
   </style>
 </head>
 <body>
+  <!-- Theme Switcher -->
+  <div style="position:fixed;top:18px;left:18px;z-index:999">
+    <button class="theme-toggle-btn" onclick="Theme.toggle()" title="التبديل إلى الوضع الفاتح (النهار)">
+      <span class="theme-icon">☀️</span>
+      <span class="theme-label">فاتح</span>
+    </button>
+  </div>
+
   <div class="auth-page">
     <!-- Left Branding -->
     <div class="auth-left">
